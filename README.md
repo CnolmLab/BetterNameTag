@@ -150,10 +150,12 @@ gradlew.bat build
 
 **完整根因分析与可落地的解决方案**见 [`docs/scoreboard-team-sync.md`](docs/scoreboard-team-sync.md)。
 
+这个 Bug 将会在未来修复，目前请先使用我们提供的补丁（鞠躬）
+
 ---
 
 ## 许可证
 
 本项目以 **MIT 许可证** 开源，详见 [`LICENSE`](./LICENSE)。
 
-Copyright © 2026 lvsm_
+Copyright © 2026 CnolmNetwork / CnolmLab
