@@ -2,7 +2,7 @@
 
 > 基于 Bukkit / Spigot（Minecraft 1.8.8）的自定义名称标签插件，支持 LuckPerms 分组前缀/后缀、临时覆盖层与开放 API。
 
-[![License](https://img.shields.io/badge/license-All%20Rights%20Reserved-red.svg)](./README.md)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
 
 ---
 
@@ -144,30 +144,16 @@ gradlew.bat build
 
 ### 多计分板混用导致 team 不同步
 
-**现象**：当本插件与其他同样操作 Scoreboard / Team 的插件（侧边栏、计分板类插件等）同时运行时，玩家头顶 NameTag 可能出现 team 不同步——例如前缀不显示、后加入的玩家看不到先加入玩家的团队前缀等。
+当本插件与其他同样操作 `Scoreboard` / `Team` 的插件（侧边栏、计分板、称号插件等）同时运行时，玩家头顶 NameTag 可能出现 team 不同步——例如前缀不显示、后加入玩家看不到先加入玩家的团队前缀、切场景后前缀丢失或残留等。
 
-**根因**：
-1. 在 1.8 中，新玩家默认持有**全局共享的主计分板**；若直接在其上注册 objective / team，会导致所有玩家共用同一块板，且 `resetScores` 会清掉他人数据。
-2. 若 `setScoreboard` 时 board 为空、之后再增量下发 team 包，客户端不会对**已生成的实体**重刷 NameTag 前缀。
-3. team 的 `REMOVE_PLAYERS` / `ADD_PLAYERS` 包时机不正确时，前缀同样无法刷新。
+**根因**已定位到子文件 [`src/main/java/top/cnolm/betterNameTag/NameTagManager.java`](src/main/java/top/cnolm/betterNameTag/NameTagManager.java)（方法 `applyTeam` 与 `syncTeamsToPlayer`）：直接把 `player.getScoreboard()` 当作专属板写 team，缺少「板归属判定 + 顺序下发 + 实体重新关联」三步，导致多计分板环境下跨玩家污染与客户端不重刷。
 
-**解决方案（参考实现）**：完整修复思路见同级项目 `ultrapvp` 的计分板管理器：
-
-```
-ultrapvp/src/main/java/top/cnolm/ultrapvp/_bases/scoreboard/BaseScoreboardManager.java
-```
-
-核心要点：
-
-1. **板归属判定（`resolveBoard`）**：不要直接 `player.getScoreboard()` 上注册。先判定当前板是否“属于自己的板”（非主计分板 **且** 已带有本插件 objective 名）；是则原地复用（标题/槽位变化仅发 UPDATE 包），否则新建板并 `setScoreboard`（客户端只重置这一次）。
-2. **顺序保证（`syncTeams` 先于 `setScoreboard`）**：新建板时，先同步 team 再 `setScoreboard`，使 `sendScoreboard` 把 team 一并下发，客户端在生成其他玩家实体前即拿到前缀。
-3. **实体重新关联补丁（`scheduleEntryResync`）**：建板后延迟若干 tick，对每个 `bnt_` team 的 entry 执行 `removeEntry` + `addEntry`，补发 `REMOVE_PLAYERS` + `ADD_PLAYERS` 包，强制客户端把已下发实体重新关联到 team、刷出前缀（仅首次执行一次，不影响增量更新、不会每秒闪烁）。
-4. **增量 team 同步（`createTeamOnBoard`）**：team 不存在才新建，已存在则原地 `setPrefix` / `setSuffix`，不再 `unregister` + `register`，避免 team 闪烁。
-
-> 注：本仓库 `NameTagManager` 当前采用的是“直接应用到玩家当前计分板”的简化策略，尚未合并上述多计分板兼容补丁。若需在多计分板混用场景下彻底修复，建议按 `BaseScoreboardManager` 的思路改造 `syncTeamsToPlayer` / `applyTeam`。
+**完整根因分析与可落地的解决方案**见 [`docs/scoreboard-team-sync.md`](docs/scoreboard-team-sync.md)。
 
 ---
 
 ## 许可证
 
-本项目目前**未声明开源许可证**（保留所有权利）。如需以开源方式发布，请补充 `LICENSE` 文件。
+本项目以 **MIT 许可证** 开源，详见 [`LICENSE`](./LICENSE)。
+
+Copyright © 2026 lvsm_
