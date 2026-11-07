@@ -1,0 +1,17 @@
+name: BetterNameTag
+version: 1.0.0
+main: top.cnolm.betterNameTag.BetterNameTag
+api-version: 1.8
+author: lvsm_
+depend: [LuckPerms]
+commands:
+  bnt:
+    description: BetterNameTag 主命令
+    usage: /bnt <子命令>
+    permission: bnt.admin
+    aliases: [betternametag]
+
+permissions:
+  bnt.admin:
+    description: 管理 BetterNameTag 插件
+    default: op

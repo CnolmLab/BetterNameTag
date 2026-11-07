@@ -1,0 +1,40 @@
+# ===== 构建产物 =====
+/build/
+/out/
+/bin/
+
+# ===== Gradle =====
+.gradle/
+gradle-app.setting
+**/build/
+
+# 保留 Gradle Wrapper 的 jar（便于无 Gradle 环境直接构建）
+!gradle/wrapper/gradle-wrapper.jar
+
+# ===== IDE =====
+.idea/
+*.iml
+*.ipr
+*.iws
+.vscode/
+.settings/
+.classpath
+.project
+
+# ===== 日志 / 崩溃转储 =====
+*.log
+hs_err_pid*.log
+replay_pid*.log
+
+# ===== 操作系统 / 临时 =====
+.DS_Store
+Thumbs.db
+desktop.ini
+*.tmp
+*~
+
+# ===== 第三方依赖（按需） =====
+# ProtocolLib 为运行时依赖，已随插件打包，纳入版本控制：
+#   src/libs/ProtocolLib-4.4.0.jar  （已跟踪）
+# NickAPI 已废弃且代码未引用，不纳入版本控制：
+src/libs/NickAPI-7.11.jar

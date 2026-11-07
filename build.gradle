@@ -1,0 +1,54 @@
+plugins {
+    id 'java'
+}
+
+group = 'top.cnolm.betterNameTag'
+version = '1.0.0'
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+}
+
+repositories {
+    mavenCentral()
+    maven {
+        name = "spigotmc-repo"
+        url = "https://hub.spigotmc.org/nexus/content/groups/public/"
+    }
+    maven {
+        name = 'luckperms-repo'
+        url = 'https://repo.luckperms.net/releases/'
+    }
+}
+
+dependencies {
+    compileOnly 'org.spigotmc:spigot-api:1.8.8-R0.1-SNAPSHOT'
+    compileOnly 'net.luckperms:api:5.4'
+}
+
+// ✅ 使用 jar 任务打包所有依赖
+jar {
+    // 从所有实现依赖中收集 JAR 文件
+    from {
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+    // 排除 META-INF 中的签名文件（避免冲突）
+    exclude 'META-INF/*.SF', 'META-INF/*.DSA', 'META-INF/*.RSA'
+    // 重复文件处理策略
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+
+    // 指定 Main-Class（如果需要）
+    manifest {
+        attributes(
+                'Implementation-Title': 'Ultrapvp',
+                'Implementation-Version': version
+        )
+    }
+}
+
+processResources {
+    filesMatching('plugin.yml') {
+        expand(version: project.version)
+    }
+}

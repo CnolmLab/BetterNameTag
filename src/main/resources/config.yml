@@ -1,0 +1,17 @@
+Groups:
+  Owner:
+    Permission: nte.owner
+    Prefix: '&4&o[Owner]'
+    Suffix: '&f'
+    SortPriority: 1
+  Admin:
+    Permission: nte.admin
+    Prefix: '&c&o[Admin]'
+    Suffix: '&f'
+    SortPriority: 2
+  Default:
+    Permission: nte.default
+    Prefix: '&7'
+    Suffix: '&f'
+    SortPriority: 3
+
